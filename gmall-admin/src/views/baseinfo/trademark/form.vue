@@ -123,16 +123,16 @@ export default {
 
     // 上传之前的回调
     beforeImageUrlUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
+      const isPic = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
 
-      // if (!isJPG) {
-      //   this.$message.error('上传封面图片只能是 JPG 格式!')
-      // }
-      // if (!isLt2M) {
-      //   this.$message.error('上传封面图片大小不能超过 2MB!')
-      // }
-      return isJPG && isLt2M
+      if (!isPic) {
+        this.$message.error('上传封面图片只能是 JPG/png 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传封面图片大小不能超过 2MB!')
+      }
+      return isPic && isLt2M
     }
   }
 }

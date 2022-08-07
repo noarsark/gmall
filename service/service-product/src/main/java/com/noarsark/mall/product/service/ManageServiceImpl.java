@@ -1,11 +1,14 @@
 package com.noarsark.mall.product.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.noarsark.mall.model.product.*;
 import com.noarsark.mall.product.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -31,6 +34,21 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     private BaseAttrValueMapper baseAttrValueMapper;
+
+    @Autowired
+    private SpuInfoMapper spuInfoMapper;
+
+    @Autowired
+    private BaseSaleAttrMapper baseSaleAttrMapper;
+
+    @Autowired
+    private SpuImageMapper spuImageMapper;
+
+    @Autowired
+    private SpuSaleAttrMapper spuSaleAttrMapper;
+
+    @Autowired
+    private SpuSaleAttrValueMapper spuSaleAttrValueMapper;
 
 
     @Override
@@ -100,6 +118,66 @@ public class ManageServiceImpl implements ManageService {
         // 查询到最新的平台属性值集合数据放入平台属性中！
         baseAttrInfo.setAttrValueList(getAttrValueList(attrId));
         return baseAttrInfo;
+    }
+
+    @Override
+    public IPage<SpuInfo> getSpuInfoPage(Page<SpuInfo> pageParam, SpuInfo spuInfo) {
+        QueryWrapper<SpuInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category3_id",spuInfo.getCategory3Id());
+        queryWrapper.orderByDesc("id");
+
+        return spuInfoMapper.selectPage(pageParam, queryWrapper);
+    }
+
+    @Override
+    public List<BaseSaleAttr> getBaseSaleAttrList() {
+        return baseSaleAttrMapper.selectList(null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSpuInfo(SpuInfo spuInfo) {
+        /*
+        1.  spu_info
+        2.  spu_image
+        3.  spu_sale_attr
+        4.  spu_sale_attr_value
+         */
+        spuInfoMapper.insert(spuInfo);
+        //  先获取到spuImageList 集合数据
+        List<SpuImage> spuImageList = spuInfo.getSpuImageList();
+        if (!CollectionUtils.isEmpty(spuImageList)){
+            //  循环遍历
+            for (SpuImage spuImage : spuImageList) {
+                //  将spuId 进行赋值
+                spuImage.setSpuId(spuInfo.getId());
+                spuImageMapper.insert(spuImage);
+            }
+        }
+        //  获取当前的销售属性集合
+        List<SpuSaleAttr> spuSaleAttrList = spuInfo.getSpuSaleAttrList();
+        //  判断
+        if (!CollectionUtils.isEmpty(spuSaleAttrList)){
+            //  循环遍历
+            for (SpuSaleAttr spuSaleAttr : spuSaleAttrList) {
+                //  将spuId 进行赋值
+                spuSaleAttr.setSpuId(spuInfo.getId());
+                spuSaleAttrMapper.insert(spuSaleAttr);
+
+                //  获取当前的销售属性值集合
+                List<SpuSaleAttrValue> spuSaleAttrValueList = spuSaleAttr.getSpuSaleAttrValueList();
+                if (!CollectionUtils.isEmpty(spuSaleAttrValueList)){
+                    //  循环遍历
+                    for (SpuSaleAttrValue spuSaleAttrValue : spuSaleAttrValueList) {
+                        //  将spuId 进行赋值
+                        spuSaleAttrValue.setSpuId(spuInfo.getId());
+                        //  赋值销售属性名称
+                        spuSaleAttrValue.setSaleAttrName(spuSaleAttr.getSaleAttrName());
+                        spuSaleAttrValueMapper.insert(spuSaleAttrValue);
+                    }
+                }
+            }
+        }
     }
 
     /**

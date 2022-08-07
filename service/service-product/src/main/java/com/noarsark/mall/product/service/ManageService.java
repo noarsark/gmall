@@ -1,9 +1,8 @@
 package com.noarsark.mall.product.service;
 
-import com.noarsark.mall.model.product.BaseAttrInfo;
-import com.noarsark.mall.model.product.BaseCategory1;
-import com.noarsark.mall.model.product.BaseCategory2;
-import com.noarsark.mall.model.product.BaseCategory3;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.noarsark.mall.model.product.*;
 
 import java.util.List;
 
@@ -64,5 +63,26 @@ public interface ManageService {
      */
     BaseAttrInfo getAttrInfo(Long attrId);
 
+
+    /**
+     * spu分页查询
+     * @param pageParam
+     * @param spuInfo
+     * @return
+     */
+    IPage<SpuInfo> getSpuInfoPage(Page<SpuInfo> pageParam, SpuInfo spuInfo);
+
+
+    /**
+     * 查询所有的销售属性数据
+     * @return
+     */
+    List<BaseSaleAttr> getBaseSaleAttrList();
+
+    /**
+     * 保存spuInfo信息
+     * @param spuInfo
+     */
+    void saveSpuInfo(SpuInfo spuInfo);
 
 }

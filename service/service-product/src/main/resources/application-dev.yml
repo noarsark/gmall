@@ -54,4 +54,4 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
 fileServer:
-  url: http://192.168.0.106:8080/ # fastDFS 分布式文件系统的 ip:port
+  url: http://192.168.0.106:8888/ # fastDFS 分布式文件系统的 ip:port
