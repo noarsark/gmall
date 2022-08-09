@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.noarsark.mall.common.result.Result;
 import com.noarsark.mall.model.product.BaseSaleAttr;
+import com.noarsark.mall.model.product.SpuImage;
 import com.noarsark.mall.model.product.SpuInfo;
+import com.noarsark.mall.model.product.SpuSaleAttr;
 import com.noarsark.mall.product.service.ManageService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +66,22 @@ public class SpuManageController {
         //  返回
         return Result.ok();
     }
+
+    //  http://api.gmall.com/admin/product/spuImageList/29
+    @GetMapping("spuImageList/{spuId}")
+    public Result getSpuImageList(@PathVariable Long spuId){
+        //  调用服务层方法
+        List<SpuImage> spuImageList = manageService.getSpuImageList(spuId);
+        return Result.ok(spuImageList);
+    }
+
+    //  http://api.gmall.com/admin/product/spuSaleAttrList/29
+    @GetMapping("spuSaleAttrList/{spuId}")
+    public Result getSpuSaleAttrList(@PathVariable Long spuId){
+        // 调用服务层方法
+         List<SpuSaleAttr> spuSaleAttrList = manageService.getSpuSaleAttrList(spuId);
+         return Result.ok(spuSaleAttrList);
+    }
+
 
 }
